@@ -25,65 +25,49 @@ In your project's Gruntfile, add a section named `pathseeker` to the data object
 ```js
 grunt.initConfig({
   pathseeker: {
-    options: {
-      // Task-specific options go here.
-    },
     your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
+      files: {
+        src: ['app/index.html']
+      }
+    }
+  }
 });
 ```
 
-### Options
+In the target html files, surround `<script>` or `<link>` tags with pathseeker comment blocks. Each block is opened with `<!-- pathseeker:name -->` and closed with `<!-- pathseekerend -->`. Each block must have a unique name specified after the semi-colon. This name will be the name of the variable made available in your Gruntfile.
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
+```html
+<html>
+    <head>
+        <title>pathseeker</title>
+        <!-- pathseeker:scripts -->
+            <script src="test/first.js"></script>
+            <script src="test/scripts/second.js"></script>
+        <!-- endpathseeker -->
 
-A string value that is used to do something with whatever.
-
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
-
-A string value that is used to do something else with whatever else.
-
-### Usage Examples
-
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  pathseeker: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
+        <!-- pathseeker:styles -->
+            <link rel="stylesheet" type="text/css" href="test/first.css">
+            <link rel="stylesheet" type="text/css" href="test/styles/second.css">
+        <!-- endpathseeker -->
+    </head>
+    <body>
+    </body>
+</html>
 ```
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+Pathseeker will find all `src` and `href` paths within each block. These paths will be stored in arrays named after their respective blocks inside a `pathseeker` config variable. This config variable can be accessed anywhere in the Gruntfile.
 
-```js
-grunt.initConfig({
-  pathseeker: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
 ```
+var pf = grunt.config.get('pathseeker');
+console.log( pf.styles ); // returns an array of paths from the css block
+```
+
+These arrays of paths can be used by other tasks (such as minifiers) while only having to keep your html sources up to date.
+
+NOTE: Remember to run the pathseeker task before any tasks that need to access the `pathseeker` config variable.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
+1.0.0 - Initial release
