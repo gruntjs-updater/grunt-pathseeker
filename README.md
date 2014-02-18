@@ -19,6 +19,8 @@ grunt.loadNpmTasks('grunt-pathseeker');
 
 ## The "pathseeker" task
 
+Pathseeker allows comment blocks to be defined within html files that can be searched for paths to scripts and stylesheets. Those paths are added to config variables that can be used by other task (such as minifiers) within the Gruntfile. This means any new script or stylesheet sources in the html will automatically be picked up by tasks that rely on them.
+
 ### Overview
 In your project's Gruntfile, add a section named `pathseeker` to the data object passed into `grunt.initConfig()`.
 
@@ -62,7 +64,7 @@ var pf = grunt.config.get('pathseeker');
 console.log( pf.styles ); // returns an array of paths from the css block
 ```
 
-These arrays of paths can be used by other tasks (such as minifiers) while only having to keep your html sources up to date.
+These arrays of paths can now be used by other tasks.
 
 NOTE: Remember to run the pathseeker task before any tasks that need to access the `pathseeker` config variable.
 
