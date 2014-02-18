@@ -9,42 +9,71 @@
 'use strict';
 
 module.exports = function(grunt) {
-
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+  var _ = require('lodash');
 
   grunt.registerMultiTask('pathseeker', 'Searches for paths within pathseeker blocks and adds them to Grunt variables.', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
+    blockPattern = /<!--\s*pathseeker[\s\S]*?endpathfinder\s*-->/gm;
+    namePattern  = /^<!--\s*pathseeker:([a-z0-9]+)\s*-->/;
+    pathPattern  = /(src|href)=['"][\s\S]*?['">]/gm;
+
     var options = this.options({
-      punctuation: '.',
-      separator: ', '
     });
 
-    // Iterate over all specified file groups.
+    foundpaths = {};
     this.files.forEach(function(f) {
-      // Concat specified files.
       var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
         if (!grunt.file.exists(filepath)) {
           grunt.log.warn('Source file "' + filepath + '" not found.');
           return false;
         } else {
           return true;
         }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+      });
 
-      // Handle options.
-      src += options.punctuation;
+      src.forEach(function(filepath) {
+        grunt.log.writeln 'pathfinding ' + filepath;
 
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
+        // get the base path of the target file
+        basePath = '';
+        lastSlash = filepath.lastIndexOf('/');
+        if (lastSlash > -1) {
+          basePath = filepath.slice(0, lastSlash);
+        }
 
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
+        var content = grunt.file.read(filepath);
+        // find all blocks
+        var blockMatches = content.match(blockPattern);
+        blockMatches.forEach(function(block) {
+          // determine the block's variable name
+          var nameMatch = block.match(namePattern);
+          if (nameMatch && nameMatch.length >= 2) {
+            var name = nameMatch[1];
+            grunt.log.writeln('found block: ' + name);
+            // start a list of found paths
+            if (!foundpaths[name]) {
+              foundpaths[name] = [];
+            }
+            // find all paths within the block
+            var pathMathces = block.match(pathPattern);
+            pathMatches.forEach(function(path) {
+              // sanitize path
+              path = path.replace(/(src|href=/, '');
+              path = path.replace(/['">]*/g, '');
+              // get complete path relative to the base
+              var relativePath = basePath + '/' + path;
+              if (!_.contains(foundpaths[name], relativePath)) {
+                foundpaths[name].push(relativePath);
+                grunt.log.writeln '    ' + relativePath;
+              }
+            });
+          } else {
+            grunt.log.error('invalid block parameters');
+          }
+        });
+      });
+
+      // make the paths available via a Grunt variable
+      grunt.config.set('pathseeker', foundpaths);
     });
   });
-
 };
