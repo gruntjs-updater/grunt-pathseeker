@@ -61,7 +61,8 @@ Pathseeker will find all `src` and `href` paths within each block. These paths w
 
 ```
 var pf = grunt.config.get('pathseeker');
-console.log( pf.styles ); // returns an array of paths from the css block
+console.log( pf.styles );
+// returns ['test/first.css', 'test/styles/second.css'] from the styles block
 ```
 
 These arrays of paths can now be used by other tasks.
