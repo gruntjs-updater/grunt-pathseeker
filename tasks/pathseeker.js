@@ -12,7 +12,7 @@ module.exports = function(grunt) {
   var _ = require('lodash');
 
   grunt.registerMultiTask('pathseeker', 'Searches for paths within pathseeker blocks and adds them to Grunt variables.', function() {
-    var blockPattern = /<!--\s*pathseeker[\s\S]*?endpathfinder\s*-->/gm;
+    var blockPattern = /<!--\s*pathseeker[\s\S]*?pathseeker\s*-->/gm;
     var namePattern  = /^<!--\s*pathseeker:([a-z0-9]+)\s*-->/;
     var pathPattern  = /(src|href)=['"][\s\S]*?['">]/gm;
 
@@ -55,18 +55,20 @@ module.exports = function(grunt) {
                 foundpaths[name] = [];
               }
               // find all paths within the block
-              var pathMathces = block.match(pathPattern);
-              pathMatches.forEach(function(path) {
-                // sanitize path
-                path = path.replace(/(src|href=/, '');
-                path = path.replace(/['">]*/g, '');
-                // get complete path relative to the base
-                var relativePath = basePath + '/' + path;
-                if (!_.contains(foundpaths[name], relativePath)) {
-                  foundpaths[name].push(relativePath);
-                  grunt.log.writeln('    ' + relativePath);
-                }
-              });
+              var pathMatches = block.match(pathPattern);
+              if(pathMatches) {
+                pathMatches.forEach(function(path) {
+                  // sanitize path
+                  path = path.replace(/(src|href)=/, '');
+                  path = path.replace(/['">]*/g, '');
+                  // get complete path relative to the base
+                  var relativePath = basePath + '/' + path;
+                  if (!_.contains(foundpaths[name], relativePath)) {
+                    foundpaths[name].push(relativePath);
+                    grunt.log.writeln('    ' + relativePath);
+                  }
+                });
+              }
             } else {
               grunt.log.error('invalid block parameters');
             }
