@@ -17,6 +17,7 @@ module.exports = function(grunt) {
     var pathPattern  = /(src|href)=['"][\s\S]*?['">]/gm;
 
     var options = this.options({
+      prefixBasePath: true
     });
 
     var foundpaths = {};
@@ -62,7 +63,12 @@ module.exports = function(grunt) {
                   path = path.replace(/(src|href)=/, '');
                   path = path.replace(/['">]*/g, '');
                   // get complete path relative to the base
-                  var relativePath = basePath + '/' + path;
+                  var relativePath = '';
+                  // optionally prepend basePath
+                  if (options.prefixBasePath) {
+                    relativePath = basePath + '/';
+                  }
+                  relativePath += path;
                   if (!_.contains(foundpaths[name], relativePath)) {
                     foundpaths[name].push(relativePath);
                     grunt.log.writeln('    ' + relativePath);
