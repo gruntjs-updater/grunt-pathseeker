@@ -71,11 +71,11 @@ NOTE: Remember to run the pathseeker task before any tasks that need to access t
 
 ### Options
 
-#### options.prefixBasePath
-Type: `Boolean`
+#### options.basePath
+Type: `Boolean` or `String`
 Default value: `true`
 
-Prefixes all paths with a base path relative to the target source file. Set this to `false` if you want the paths to be exactly as they appear in `src` and `href` attributes within the target source file.
+Prefixes all paths with a base path relative to the target source file. A string will explicitly override the prefix. Setting this to `false` will exclude the prefix entirely.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).

@@ -17,7 +17,7 @@ module.exports = function(grunt) {
     var pathPattern  = /(src|href)=['"][\s\S]*?['">]/gm;
 
     var options = this.options({
-      prefixBasePath: true
+      basePath: true
     });
 
     var foundpaths = {};
@@ -65,8 +65,14 @@ module.exports = function(grunt) {
                   // get complete path relative to the base
                   var relativePath = '';
                   // optionally prepend basePath
-                  if (options.prefixBasePath) {
+                  if (options.basePath === true) {
                     relativePath = basePath + '/';
+                  } else if (typeof options.basePath === 'string') {
+                    relativePath = options.basePath;
+                    // append slash if one doesn't exist
+                    if (relativePath.lastIndexOf('/') === relativePath.length - 1) {
+                      relativePath += '/';
+                    }
                   }
                   relativePath += path;
                   if (!_.contains(foundpaths[name], relativePath)) {
