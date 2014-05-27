@@ -70,7 +70,7 @@ module.exports = function(grunt) {
                   } else if (typeof options.basePath === 'string') {
                     relativePath = options.basePath;
                     // append slash if one doesn't exist
-                    if (relativePath.lastIndexOf('/') === relativePath.length - 1) {
+                    if (relativePath.lastIndexOf('/') !== relativePath.length - 1) {
                       relativePath += '/';
                     }
                   }
